@@ -72,65 +72,73 @@ const updateScores = (changedTeam: Team) => {
       >Next</button>
     </div>
 
-    <template
-      v-for="(question, idx) of questionSet.inWhichBook"
-      :key="idx"
-    >
-      <div
-        v-if="activeQuestion === (idx+1)"
-        class="flex-grow p-8 mt-4 card shadow"
-        :class="{ 'bg-purple-50': activeTeam.number === 1, 'bg-green-50': activeTeam.number === 2 }"
+    <div class="relative">
+      <template
+        v-for="(question, idx) of questionSet.inWhichBook"
+        :key="idx"
       >
-        <div class="flex justify-between">
-          <div>
-            Question #{{ activeQuestion }}
-          </div>
-          <div>
-            Team: {{ activeTeam.name }}
-          </div>
-        </div>
-        <div class="text-[1.5rem] mt-2 mb-4">
-          {{ question.question }}
-        </div>
-
-        <div
-          class="p-4 mt-2 rounded-lg"
-          :class="{ 'bg-purple-100': activeTeam.number === 1, 'bg-green-100': activeTeam.number === 2 }"
-        >
-          <div class="mb-2">
-            <div class="text-gray-500"><em>Answer (TITLE):</em></div>
-            <div>{{ question.answerTitle }}</div>
-          </div>
-          <div class="mb-2">
-            <div class="text-gray-500"><em>Answer (AUTHOR):</em></div>
-            <div>{{ question.answerAuthor }}</div>
-          </div>
-
-          <div class="text-right "><span class="text-gray-500">Pages:</span> {{ question.pages.join(', ') }}</div>
-        </div>
-
-        <div
-          class="flex items-center justify-end gap-x-4 mt-4"
-        >
-          <template v-if="!score.has(activeQuestion)">
-            <button class="btn btn-secondary" @click="assignPoints(1, activeTeam)">+1 point</button>
-            <button class="btn btn-primary" @click="assignPoints(2, activeTeam)">+2 points</button>
-            <div class="divider divider-horizontal" />
-            <button class="btn btn-warning" @click="assignPoints(0, activeTeam)">No Points</button>
-          </template>
-          <template v-else>
-            <div>
-              <div>{{ activeScore?.points }}pt for {{ activeScore?.team.name }}</div>
-              <label v-if="activeScore?.points === 0">
-                Incorrect answer?
-                <input class="input" v-model="activeScore!.wrongAnswer" />
-              </label>
+        <TransitionGroup>
+          <div
+            v-if="activeQuestion === (idx+1)"
+            class="flex-grow p-8 mt-4 card shadow"
+            :class="{ 'bg-purple-50': activeTeam.number === 1, 'bg-green-50': activeTeam.number === 2 }"
+          >
+            <div class="flex justify-between">
+              <div>
+                Question #{{ activeQuestion }}
+              </div>
+              <div>
+                Team: {{ activeTeam.name }}
+              </div>
             </div>
-              <button class="btn" @click="clearActiveScore">undo?</button>
-          </template>
-        </div>
-      </div>
-    </template>
+            <div class="text-[1.5rem] mt-2 mb-4">
+              {{ question.question }}
+            </div>
+
+            <div
+              class="p-4 mt-2 rounded-lg"
+              :class="{ 'bg-purple-100': activeTeam.number === 1, 'bg-green-100': activeTeam.number === 2 }"
+            >
+              <div class="mb-2">
+                <div class="text-gray-500"><em>Answer (TITLE):</em></div>
+                <div>{{ question.answerTitle }}</div>
+              </div>
+              <div class="mb-2">
+                <div class="text-gray-500"><em>Answer (AUTHOR):</em></div>
+                <div>{{ question.answerAuthor }}</div>
+              </div>
+
+              <div class="text-right "><span class="text-gray-500">Pages:</span> {{ question.pages.join(', ') }}</div>
+            </div>
+
+            <div
+              class="flex items-center justify-end gap-x-4 mt-4"
+            >
+              <template v-if="!score.has(activeQuestion)">
+                <button class="btn btn-secondary" @click="assignPoints(2, activeTeam)">+1 point</button>
+                <button class="btn btn-primary" @click="assignPoints(3, activeTeam)">+2 points</button>
+                <div class="points-button" @click="assignPoints(5, activeTeam)">
+                  <div>Correct!</div>
+                  <div class="text-2xs">+5 Points</div>
+                </div>
+                <div class="divider divider-horizontal" />
+                <button class="btn btn-warning" @click="assignPoints(0, activeTeam)">No Points</button>
+              </template>
+              <template v-else>
+                <div>
+                  <div>{{ activeScore?.points }}pt for {{ activeScore?.team.name }}</div>
+                  <label v-if="activeScore?.points === 0">
+                    Incorrect answer?
+                    <input class="input" v-model="activeScore!.wrongAnswer" />
+                  </label>
+                </div>
+                <button class="btn" @click="clearActiveScore">undo?</button>
+              </template>
+            </div>
+          </div>
+        </TransitionGroup>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -140,5 +148,25 @@ const updateScores = (changedTeam: Team) => {
 }
 .questions-buttons button[disabled] {
   @apply opacity-50;
+}
+
+.points-button {
+  @reference btn;
+  @apply leading-none;
+}
+
+.v-enter-active,
+.v-leave-active {
+  transition: all 0.5s ease;
+  position: absolute;
+}
+
+.v-enter-from {
+  opacity: 0;
+  transform: translateX(15%);
+}
+.v-leave-to {
+  opacity: 0;
+  transform: translateX(15%);
 }
 </style>

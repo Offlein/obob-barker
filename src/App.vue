@@ -32,7 +32,7 @@ const handleScoreChange = (e: { teamNumber: 1 | 2, newScore: number }) => {
 
 <template>
   <Suspense>
-    <div class="mx-auto max-w-[60rem] w-full">
+    <div class="mx-auto max-w-[60rem] w-9/10">
       <h1 class="text-xl">OBOB Barker</h1>
 
       <div class="">

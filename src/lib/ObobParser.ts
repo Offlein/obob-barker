@@ -42,11 +42,11 @@ export function parseQuestionSet(
   // Regex for "In which book" blocks
   // We match loosely around the header line so minor punctuation/emdash variants don’t break parsing.
   const inWhichBookRe =
-    /IN WHICH BOOK QUESTION[\s\S]*?QUESTION:\s*([\s\S]*?)\nANSWER\s*\(TITLE\):\s*([\s\S]*?)\nANSWER\s*\(AUTHOR\):\s*([\s\S]*?)\nPAGE:\s*([^\n]+)\n/gi;
+    /IN[\s\S]*?WHICH[\s\S]*?BOOK[\s\S]*?QUESTION[\s\S]*?QUESTION:\s*([\s\S]*?)\nANSWER\s*\(TITLE\):\s*([\s\S]*?)\nANSWER\s*\(AUTHOR\):\s*([\s\S]*?)\nPAGE(?:S)?:\s*([^\n]+)\n/gi;
 
   // Regex for "Content question" blocks
   const contentRe =
-    /CONTENT QUESTION[\s\S]*?TITLE:\s*([\s\S]*?)\nQUESTION:\s*([\s\S]*?)\nANSWER:\s*([\s\S]*?)\nPAGE:\s*([^\n]+)\n/gi;
+    /CONTENT[\s\S]*?QUESTION[\s\S]*?TITLE:\s*([\s\S]*?)\nQUESTION:\s*([\s\S]*?)\nANSWER:\s*([\s\S]*?)\nPAGE(?:S)?:\s*([^\n]+)\n/gi;
 
   // Collect "In which book" entries
   for (let m; (m = inWhichBookRe.exec(fullText)); ) {
