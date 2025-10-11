@@ -1,140 +1,104 @@
 <script setup lang="ts" async>
-import type { QuestionSet } from '@/types/ObobTypes.ts'
-import { computed, reactive, ref } from 'vue'
-import type { Team } from '@/types/Team.ts'
+import { computed } from 'vue'
+import { useAppStore } from '@/stores/AppStore.ts'
+import type {
+  ContentQuestionType,
+  InWhichBookQuestionType,
+} from '@/types/ObobTypes.ts'
+import InWhichBookQuestion from '@/components/InWhichBookQuestion.vue'
+import ContentQuestion from '@/components/ContentQuestion.vue'
 
-const props = defineProps<{
-  questionSet: QuestionSet
-  team1: Team
-  team2: Team
-}>()
+const store = useAppStore()
 
-const emit = defineEmits<{
-  (e: 'scoreChange', value: { teamNumber: 1 | 2, newScore: number }): void
-}>()
-
-const score = reactive(new Map<number, { team: Team, points: number, wrongAnswer?: string }>())
-
-const activeQuestion = ref<number>(1)
-
-const activeScore = computed(() => {
-  return score.get(activeQuestion.value)
-})
-
-const activeTeam = computed((): Team => {
-  return activeQuestion.value % 2 !== 0 ? props.team1 : props.team2
+const activeQuestion = computed(() => {
+  return questionList.value.find((q) => q.number === store.activeQuestionKey.number && q.type === store.activeQuestionKey.type)
 })
 
 const canPrev = computed(() => {
-  return activeQuestion.value > 1
+  return !(store.activeQuestionKey.type === 'inWhichBook' && store.activeQuestionKey.number === 1)
 })
 
 const canNext = computed(() => {
-  return activeQuestion.value < props.questionSet.inWhichBook.length
+  return !(store.activeQuestionKey.type === 'content' && store.activeQuestionKey.number >= store.questionSet!.content.length)
 })
 
-const assignPoints = (points: number, team: Team) => {
-  score.set(activeQuestion.value, { team: team, points })
-  updateScores(team)
-}
-
-const clearActiveScore = () => {
-  score.delete(activeQuestion.value)
-  updateScores(activeTeam.value)
-}
-
-const updateScores = (changedTeam: Team) => {
-  const teamNum = changedTeam.number
-  let newScore = 0
-  score.forEach((value) => {
-    if (value.team.number === teamNum) {
-      newScore += value.points
+const goPrev = () => {
+  if (store.activeQuestionKey.type === 'content' && store.activeQuestionKey.number === 1) {
+    store.activeQuestionKey = {
+      type: 'inWhichBook',
+      number: store.questionSet!.inWhichBook.length,
     }
-  });
-
-  emit('scoreChange', { teamNumber: teamNum, newScore: newScore })
+  } else if (store.activeQuestionKey.number > 1) {
+    store.activeQuestionKey.number--
+  }
 }
+
+const goNext = () => {
+  if (store.activeQuestionKey.type === 'inWhichBook' && store.activeQuestionKey.number === store.questionSet!.inWhichBook.length) {
+    store.activeQuestionKey = {
+      type: 'content',
+      number: 1,
+    }
+  } else if (store.activeQuestionKey.number < store.questionSet!.content.length) {
+    store.activeQuestionKey.number++
+  }
+}
+
+const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType)[] => {
+  if (!store.questionSet?.inWhichBook || !store.questionSet?.content) {
+    return []
+  }
+  return [
+    ...store.questionSet!.inWhichBook,
+    ...store.questionSet!.content,
+  ]
+})
 
 </script>
 
 <template>
   <div class="flex flex-col">
-    <div class="flex gap-x-4 justify-end questions-buttons">
-      <button
-        class="btn btn-neutral"
-        :disabled="!canPrev"
-        @click="activeQuestion--"
-      >Back</button>
-      <button
-        class="btn btn-neutral"
-        :disabled="!canNext"
-        @click="activeQuestion++"
-      >Next</button>
+    <div class="flex justify-between items-center gap-x-16">
+      <div class="tabs tabs-box tabs-sm">
+        <div class="tab" :class="{ 'tab-active': store.activeQuestionKey.type === 'inWhichBook' }" @click="store.activeQuestionKey = { type: 'inWhichBook', number: 1 }">In Which Book</div>
+        <div class="tab" :class="{ 'tab-active': store.activeQuestionKey.type === 'content' }" @click="store.activeQuestionKey = { type: 'content', number: 1 }">Content</div>
+      </div>
+
+      <div class="flex gap-x-4 justify-end questions-buttons">
+        <button
+          class="btn btn-neutral"
+          :disabled="!canPrev"
+          @click="goPrev"
+        >Back</button>
+        <button
+          class="btn btn-neutral"
+          :disabled="!canNext"
+          @click="goNext"
+        >Next</button>
+      </div>
     </div>
 
     <div class="relative">
       <template
-        v-for="(question, idx) of questionSet.inWhichBook"
-        :key="idx"
+        v-for="question of questionList"
+        :key="question.type + question.number"
       >
         <TransitionGroup>
           <div
-            v-if="activeQuestion === (idx+1)"
-            class="flex-grow p-8 mt-4 card shadow"
-            :class="{ 'bg-purple-50': activeTeam.number === 1, 'bg-green-50': activeTeam.number === 2 }"
+            v-if="store.activeQuestionKey.type === question.type && store.activeQuestionKey.number === question.number"
+            class="flex-grow p-8 mt-4 card shadow w-full"
+            :class="{ 'bg-purple-50': store.activeTeam.number === 1, 'bg-green-50': store.activeTeam.number === 2 }"
           >
-            <div class="flex justify-between">
-              <div>
-                Question #{{ activeQuestion }}
-              </div>
-              <div>
-                Team: {{ activeTeam.name }}
-              </div>
-            </div>
-            <div class="text-[1.5rem] mt-2 mb-4">
-              {{ question.question }}
-            </div>
-
-            <div
-              class="p-4 mt-2 rounded-lg"
-              :class="{ 'bg-purple-100': activeTeam.number === 1, 'bg-green-100': activeTeam.number === 2 }"
-            >
-              <div class="mb-2">
-                <div class="text-gray-500"><em>Answer (TITLE):</em></div>
-                <div>{{ question.answerTitle }}</div>
-              </div>
-              <div class="mb-2">
-                <div class="text-gray-500"><em>Answer (AUTHOR):</em></div>
-                <div>{{ question.answerAuthor }}</div>
-              </div>
-
-              <div class="text-right "><span class="text-gray-500">Pages:</span> {{ question.pages.join(', ') }}</div>
-            </div>
-
-            <div
-              class="flex items-center justify-end gap-x-4 mt-4"
-            >
-              <template v-if="!score.has(activeQuestion)">
-                <button class="btn btn-secondary" @click="assignPoints(2, activeTeam)">+1 point</button>
-                <button class="btn btn-primary" @click="assignPoints(3, activeTeam)">+2 points</button>
-                <div class="points-button" @click="assignPoints(5, activeTeam)">
-                  <div>Correct!</div>
-                  <div class="text-2xs">+5 Points</div>
-                </div>
-                <div class="divider divider-horizontal" />
-                <button class="btn btn-warning" @click="assignPoints(0, activeTeam)">No Points</button>
-              </template>
-              <template v-else>
-                <div>
-                  <div>{{ activeScore?.points }}pt for {{ activeScore?.team.name }}</div>
-                  <label v-if="activeScore?.points === 0">
-                    Incorrect answer?
-                    <input class="input" v-model="activeScore!.wrongAnswer" />
-                  </label>
-                </div>
-                <button class="btn" @click="clearActiveScore">undo?</button>
-              </template>
-            </div>
+            <InWhichBookQuestion
+              v-if="activeQuestion!.type === 'inWhichBook'"
+              :question="activeQuestion as InWhichBookQuestionType"
+              :team="store.activeTeam"
+            />
+            <ContentQuestion
+              v-else
+              :question="activeQuestion as ContentQuestionType"
+              :team="store.activeTeam"
+            />
           </div>
         </TransitionGroup>
       </template>
@@ -148,11 +112,6 @@ const updateScores = (changedTeam: Team) => {
 }
 .questions-buttons button[disabled] {
   @apply opacity-50;
-}
-
-.points-button {
-  @reference btn;
-  @apply leading-none;
 }
 
 .v-enter-active,
