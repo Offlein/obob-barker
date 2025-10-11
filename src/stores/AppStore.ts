@@ -27,11 +27,14 @@ export const useAppStore = defineStore('app', () => {
 
   const questionSet = ref<QuestionSet>()
 
-  const handleScoreChange = (e: { teamNumber: 1 | 2, newScore: number }) => {
-    if (e.teamNumber === 1) {
-      team1.value.score = e.newScore
-    } else {
-      team2.value.score = e.newScore
+  const updateScores = () => {
+    team1.value.score = 0
+    team2.value.score = 0
+    for (const question of [...questionSet.value!.inWhichBook, ...questionSet.value!.content]) {
+      if (question.points) {
+        const team = question.points.teamNumber === 1 ? team1.value : team2.value
+        team.score += question.points.number
+      }
     }
   }
 
@@ -58,14 +61,17 @@ export const useAppStore = defineStore('app', () => {
       teamNumber: team.number,
       wrongAnswer: undefined,
     }
+    updateScores()
   }
 
   const clearPoints = (question: ObobQuestionType) => {
     questionSet.value![question.type][question.number - 1]!.points = undefined
+    updateScores()
   }
 
   const setWrongAnswer = (question: ObobQuestionType, wrongAnswer: string) => {
     questionSet.value![question.type][question.number - 1]!.points!.wrongAnswer = wrongAnswer
+    updateScores()
   }
 
   return {
@@ -74,7 +80,6 @@ export const useAppStore = defineStore('app', () => {
     team1,
     team2,
     questionSet,
-    handleScoreChange,
     getTeamName,
     activeQuestionKey,
     activeTeam,
