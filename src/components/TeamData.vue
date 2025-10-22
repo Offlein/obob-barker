@@ -32,7 +32,7 @@ watch(isEditing, (newVal, oldVal) => {
 <template>
   <div
     class="card p-8 py-4 shadow something"
-    :class="'bg-' + thisTeam.color + '-100'"
+    :class="'bg-team' + thisTeam.number + '-100'"
   >
     <label
       v-if="!isGameplay || isEditing"
@@ -42,7 +42,7 @@ watch(isEditing, (newVal, oldVal) => {
       <input
         class="input flex-grow"
         v-model="thisTeam.name"
-        :placeholder="thisTeam.number === 1 ? 'Purple Parrots' : 'Green Eagles'"
+        :placeholder="thisTeam.number === 1 ? 'Read Against the Machine' : 'The Reading Crows'"
         @blur="isEditing = false"
         @keyup.enter="isEditing = false"
         ref="inputRef"
@@ -64,7 +64,7 @@ watch(isEditing, (newVal, oldVal) => {
       <div class="stats">
         <div class="stat">
           <div class="stat-title">Score</div>
-          <div class="stat-value">{{ thisTeam.score }}</div>
+          <div class="stat-value">{{ store.teamScores[thisTeam.number] }}</div>
         </div>
       </div>
     </div>

@@ -20,16 +20,17 @@ defineProps<{
 
     <template #answers>
       <div class="mb-2">
-        <div class="text-gray-500"><em>Answer (TITLE):</em></div>
-        <div>{{ question.answerTitle }}</div>
+        <div :class="'text-team' + team.number + '-content-light'"><em>Answer (TITLE):</em></div>
+        <div :class="'text-team' + team.number + '-content'">{{ question.answerTitle }}</div>
       </div>
       <div class="mb-2">
-        <div class="text-gray-500"><em>Answer (AUTHOR):</em></div>
-        <div>{{ question.answerAuthor }}</div>
+        <div :class="'text-team' + team.number + '-content-light'"><em>Answer (AUTHOR):</em></div>
+        <div :class="'text-team' + team.number + '-content'">{{ question.answerAuthor }}</div>
       </div>
     </template>
   </GenericQuestion>
 </template>
 
 <style scoped>
+
 </style>

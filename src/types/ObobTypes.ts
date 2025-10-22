@@ -1,6 +1,5 @@
-export interface ObobPoints {
-  number: number
-  teamNumber: 1 | 2
+export interface ObobScoreType {
+  points?: number
   wrongAnswer?: string
 }
 
@@ -9,7 +8,11 @@ export interface ObobQuestionType {
   number: number
   question: string
   pages: number[]
-  points?: ObobPoints
+  teamNumber: 1 | 2
+  score: {
+    1: ObobScoreType,
+    2: ObobScoreType,
+  }
 }
 
 export interface InWhichBookQuestionType extends ObobQuestionType {

@@ -2,3 +2,44 @@
 @plugin "daisyui" {
   themes: emerald --default, dark --prefersdark;
 }
+
+@layer base {
+  :root { scrollbar-gutter: auto; }
+}
+
+@theme {
+  --color-team1-50: var(--color-purple-50);
+  --color-team1-100: var(--color-purple-100);
+  --color-team1-content: var(--color-indigo-950);
+  --color-team1-content-light: var(--color-indigo-800);
+
+  --color-team2-50: #ffe7db;
+  --color-team2-100: #FFD3BA;
+  --color-team2-content: var(--color-orange-950);
+  --color-team2-content-light: var(--color-amber-800);
+}
+
+.bg-team1-50 {
+  background-color: var(--color-team1-50);
+}
+.bg-team1-100 {
+  background-color: var(--color-team1-100);
+}
+.bg-team2-50 {
+  background-color: var(--color-team2-50);
+}
+.bg-team2-100 {
+  background-color: var(--color-team2-100);
+}
+.text-team1-content {
+  color: var(--color-team1-content);
+}
+.text-team2-content {
+  color: var(--color-team2-content);
+}
+.text-team1-content-light {
+  color: var(--color-team1-content-light);
+}
+.text-team2-content-light {
+  color: var(--color-team2-content-light);
+}

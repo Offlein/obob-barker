@@ -1,15 +1,23 @@
 <script setup lang="ts" async>
 import { parseQuestionSet } from '@/lib/ObobParser.ts'
 import type { QuestionSet } from '@/types/ObobTypes.ts'
-import type { PDFParse as PDFParseType } from 'pdf-parse'
-import { useAppStore } from '@/stores/AppStore.ts'
 import { ref } from 'vue'
 
-const store = useAppStore()
+defineProps<{
+  filename?: string
+}>()
+
+const emit = defineEmits<{
+  (e: 'update:filename', value: string | undefined): void
+  (e: 'update:questions', value: QuestionSet | undefined): void
+}>()
+
+const fileInput = ref<HTMLInputElement>()
 const questionSet = ref<QuestionSet>()
 const questionSetError = ref<string | undefined>()
+const isParsing = ref<boolean>(false)
 
-const { PDFParse } = await import('@/vendor/pdf-parse.es.min') as { PDFParse: typeof PDFParseType }
+const { PDFParse } = await import('@/vendor/pdf-parse.es.min.js')
 
 const onLoadedData = async (e: Event) => {
   questionSetError.value = undefined
@@ -17,9 +25,14 @@ const onLoadedData = async (e: Event) => {
   const file = (e.target as HTMLInputElement).files?.[0]
   if (!file) {
     questionSet.value = undefined
-    store.questionSet = undefined
+    emit('update:filename', undefined)
+    emit('update:questions', undefined)
     return
+  } else {
+    emit('update:filename', file.name)
   }
+
+  isParsing.value = true
 
   try {
     const buffer = await file.arrayBuffer()
@@ -30,51 +43,100 @@ const onLoadedData = async (e: Event) => {
     questionSet.value = parseQuestionSet(textObj.text)
   } catch (e) {
     console.error(e)
-    questionSetError.value = e.message
-    store.questionSet = undefined
+    questionSetError.value = e instanceof Error ? e.message : String(e)
+    emit('update:questions', undefined)
+    emit('update:filename', undefined)
+    isParsing.value = false
     return
   }
 
   if (questionSet.value?.inWhichBook.length === 8 && questionSet.value?.content.length === 8) {
-    store.questionSet = questionSet.value
+    emit('update:questions', questionSet.value)
   } else {
     questionSet.value = undefined
-    questionSetError.value = 'Could not detect OBOB questions.'
+    questionSetError.value = 'could not detect OBOB questions.'
   }
+  isParsing.value = false
+}
+
+const clearFile = () => {
+  questionSet.value = undefined
+  emit('update:filename', undefined)
+  emit('update:questions', undefined)
 }
 
 </script>
 
 <template>
-  <div class="max-w-md">
-    <h2 class="text-4xl mb-4">Welcome to OBOB Barker!</h2>
-    <p>Please select your current question set to begin.</p>
-    <input
-      class="file-input  mx-auto my-4"
-      type="file"
-      :class="{ 'file-input-primary': !questionSet, 'file-input-secondary': questionSet }"
-      @change="onLoadedData"
-    >
+  <div class="w-1/2 max-w-[28rem] mb-6 mx-auto relative">
+    <div v-if="!filename">
+      <input
+        ref="fileInput"
+        class="file-input mx-auto w-full"
+        type="file"
+        :class="{ 'file-input-primary': !questionSet, 'file-input-secondary': questionSet }"
+        @change="onLoadedData"
+      >
+    </div>
+    <div v-else class="flex input gap-x-4 items-center py-4 px-4 w-full">
+      <div class="btn btn-secondary btn-xs" @click="clearFile">Remove</div>
+      <div class="overflow-hidden overflow-ellipsis">{{ filename }}</div>
+    </div>
 
+    <Transition name="fade">
+      <div
+        v-if="isParsing"
+        class="mt-2 absolute w-full opacity-100 text-center rounded transition-colors text-xs"
+      >
+        <div class="text-secondary">Parsing file...</div>
+      </div>
+    </Transition>
     <div
       v-if="questionSet || questionSetError"
-      class="p-4 mt-2 text-left rounded transition-colors"
-      :class="{ 'bg-base-300': !questionSetError && !questionSet, 'bg-warning text-warning-content': questionSetError, 'bg-neutral text-neutral-content': questionSet && !questionSetError }"
+      class="absolute opacity-0 w-full mt-2 blink text-center rounded transition-colors text-xs blink"
+      :class="{ 'text-error': questionSetError, 'text-success': questionSet && !questionSetError }"
     >
-      <div>Question file loaded...</div>
-      <div v-if="store.questionSet">
-        <div>
-          <ul class="text-left list-disc pl-12">
-            <li>Found 8 "In Which Book" questions</li>
-            <li>Found 8 "Content" questions</li>
-          </ul>
-        </div>
+      <div v-if="questionSet">
+        <div>Looks good! Found all 16 questions.</div>
       </div>
-      <div v-else-if="questionSetError" class="mt-2">
-        ...Something went wrong. {{ questionSetError}}
+      <div v-else-if="questionSetError" class="error">
+        Uh oh, {{ questionSetError}}
       </div>
     </div>
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes blink {
+  0%,100% {
+    opacity: 1
+  }
+  50% {
+    opacity: 0
+  }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+  position: absolute;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.blink {
+  transition: opacity 0.5s ease;
+  animation: 1s forwards, blink 0.5s forwards 1s;
+  animation-delay: 0.5s;
+  animation-iteration-count: 2;
+}
+</style>

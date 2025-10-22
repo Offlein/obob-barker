@@ -1,31 +1,7 @@
 import type { InWhichBookQuestionType, ContentQuestionType, QuestionSet } from '@/types/ObobTypes'
 
 // Thanks ChatGPT for working with me to do most of the bitch-work! //
-type InputShape =
-  | string
-  | {
-  pages?: { text: string; [k: string]: any }[]
-  text?: string
-  [k: string]: any
-}
-export function parseQuestionSet(
-  input:
-    | string
-    | {
-    pages?: { text: string; [k: string]: any }[]
-    text?: string
-    [k: string]: any
-  }
-): QuestionSet {
-  const fullText =
-    typeof input === 'string'
-      ? input
-      : input.text
-        ? input.text
-        : Array.isArray(input.pages)
-          ? input.pages.map((p) => (p?.text ?? '')).join('\n')
-          : ''
-
+export function parseQuestionSet(fullText: string): QuestionSet {
   // Normalize some whitespace oddities without destroying punctuation
   const normalize = (s: string) =>
     s.replace(/\s*\n\s*/g, ' ').replace(/\s{2,}/g, ' ').trim()
@@ -60,7 +36,11 @@ export function parseQuestionSet(
       answerTitle: normalize(rawTitle),
       answerAuthor: normalize(rawAuthor),
       pages: parsePages(rawPages),
-      points: undefined,
+      teamNumber: questionNum % 2 === 0 ? 2 : 1,
+      score: {
+        1: { points: undefined, wrongAnswer: undefined },
+        2: { points: undefined, wrongAnswer: undefined },
+      },
     })
   }
 
@@ -76,7 +56,11 @@ export function parseQuestionSet(
       question: normalize(rawQ),
       answer: normalize(rawA),
       pages: parsePages(rawPages),
-      points: undefined,
+      teamNumber: questionNum % 2 === 0 ? 2 : 1,
+      score: {
+        1: { points: undefined, wrongAnswer: undefined },
+        2: { points: undefined, wrongAnswer: undefined },
+      },
     })
   }
 

@@ -7,6 +7,7 @@ import type {
 } from '@/types/ObobTypes.ts'
 import InWhichBookQuestion from '@/components/InWhichBookQuestion.vue'
 import ContentQuestion from '@/components/ContentQuestion.vue'
+import ScoreBoard from '@/components/ScoreBoard.vue'
 
 const store = useAppStore()
 
@@ -71,10 +72,15 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
           @click="goPrev"
         >Back</button>
         <button
+          v-if="canNext"
           class="btn btn-neutral"
-          :disabled="!canNext"
           @click="goNext"
         >Next</button>
+        <button
+          v-if="!canNext"
+          class="btn btn-secondary"
+          onclick="scoreboard.show()"
+        >Show Scores</button>
       </div>
     </div>
 
@@ -83,26 +89,28 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
         v-for="question of questionList"
         :key="question.type + question.number"
       >
-        <TransitionGroup>
-          <div
-            v-if="store.activeQuestionKey.type === question.type && store.activeQuestionKey.number === question.number"
-            class="flex-grow p-8 mt-4 card shadow w-full"
-            :class="{ 'bg-purple-50': store.activeTeam.number === 1, 'bg-green-50': store.activeTeam.number === 2 }"
-          >
-            <InWhichBookQuestion
-              v-if="activeQuestion!.type === 'inWhichBook'"
-              :question="activeQuestion as InWhichBookQuestionType"
-              :team="store.activeTeam"
-            />
-            <ContentQuestion
-              v-else
-              :question="activeQuestion as ContentQuestionType"
-              :team="store.activeTeam"
-            />
-          </div>
-        </TransitionGroup>
+        <Transition>
+            <div
+              v-if="store.activeQuestionKey.type === question.type && store.activeQuestionKey.number === question.number"
+              class="relative flex-grow p-8 mt-4 card shadow w-full"
+              :class="{ 'bg-team1-50': store.activeTeam.number === 1, 'bg-team2-50': store.activeTeam.number === 2 }"
+            >
+              <InWhichBookQuestion
+                v-if="activeQuestion!.type === 'inWhichBook'"
+                :question="activeQuestion as InWhichBookQuestionType"
+                :team="store.activeTeam"
+              />
+              <ContentQuestion
+                v-else
+                :question="activeQuestion as ContentQuestionType"
+                :team="store.activeTeam"
+              />
+            </div>
+        </Transition>
       </template>
     </div>
+
+    <ScoreBoard />
   </div>
 </template>
 
