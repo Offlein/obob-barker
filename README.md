@@ -1,35 +1,24 @@
-# obob-barker
+# OBOB Barker
 
-This template should help get you started developing with Vue 3 in Vite.
+The "OBOB Barker" app is a proof-of-concept standalone app meant to make moderating rounds within the Oregon Battle of the Books (OBOB) easier.
 
-## Recommended IDE Setup
+The app, once hosted on a server, runs entirely in the user's browser. No data is transmitted from the user to any other server, making it as secure as the desktop visiting it.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Recommended Browser Setup
-
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd) 
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
-
-## Type Support for `.vue` Imports in TS
-
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+Users must have a PDF copy of the OBOB question set _and_ a backup set for the round they are moderating.
 
 ## Project Setup
 
+The app is simple and requires Node 20+.
+
+Packages can be installed the standard way:
+ 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Development
+
+A dev server runs through Vite:
 
 ```sh
 npm run dev
@@ -37,12 +26,7 @@ npm run dev
 
 ### Type-Check, Compile and Minify for Production
 
+The app builds the standard way and then can be hosted through any webserver.
 ```sh
 npm run build
-```
-
-### Lint with [ESLint](https://eslint.org/)
-
-```sh
-npm run lint
 ```
