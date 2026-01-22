@@ -4,7 +4,12 @@ The "OBOB Barker" app is a proof-of-concept standalone app meant to make moderat
 
 The app, once hosted on a server, runs entirely in the user's browser. No data is transmitted from the user to any other server, making it as secure as the desktop visiting it.
 
-Users must have a PDF copy of the OBOB question set _and_ a backup set for the round they are moderating.
+Users must have a PDF copy of the OBOB questionset _and_ a backup set for the round they are moderating.
+
+Questionsets are expected to be PDFs generated from the official (confidential) OBOB PDFs. They are expected to be exactly 4 pages, each with 4 questions on them. The first
+two pages should be "In Which Book" questions, and the latter two should be "Content" questions. It is easy to collate the "one big questionset" using [a simple Python script
+like this one](https://gist.github.com/Offlein/6d37a59b6b699a6d96fcbd3e5ab3401b). (But the variables would need to be tweaked depending on the number of question sets and 
+introduction pages and stuff!)
 
 ## Project Setup
 
@@ -32,7 +37,7 @@ npm run build
 ```
 
 ## Questionset Checker
-The app also contains a command line tool used to ensure the validity of the question sets the main app will read. (We'd hate to have you get into a competition and find the
+The app also contains a command line tool used to ensure the validity of the questionsets the main app will read. (We'd hate to have you get into a competition and find the
 app can't read your questions!)
 
 It is expected to be run one time on all the OBOB questionset PDFs prior to running a competition.
