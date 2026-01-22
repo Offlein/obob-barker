@@ -1,0 +1,15 @@
+{
+  "extends": "@tsconfig/node22/tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    // Make TS behave like modern Node ESM resolution
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    // Ensure Node built-ins + globals are typed
+    "types": ["node"]
+  },
+  "include": ["./cli/**/*"]
+}

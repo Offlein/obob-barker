@@ -37,8 +37,6 @@ const onLoadedData = async (e: Event) => {
   try {
     const buffer = await file.arrayBuffer()
     const parser = new PDFParse({ data: buffer })
-
-    // getText / getImage / getTable also work in browser
     const textObj = await parser.getText()
     questionSet.value = parseQuestionSet(textObj.text)
   } catch (e) {
