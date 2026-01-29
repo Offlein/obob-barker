@@ -1,6 +1,6 @@
 @import "tailwindcss";
 @plugin "daisyui" {
-  themes: emerald --default, dark --prefersdark;
+  themes: emerald --default;
 }
 
 @layer base {
