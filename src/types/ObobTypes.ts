@@ -5,6 +5,7 @@ export interface ObobScoreType {
 
 export interface ObobQuestionType {
   type: 'inWhichBook' | 'content'
+  questionSet: 'main' | 'backup'
   number: number
   question: string
   pages: number[]

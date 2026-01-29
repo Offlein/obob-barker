@@ -129,6 +129,10 @@ export const useAppStore = defineStore('app', () => {
     questionSet.value = null
     backupQuestionSet.value = null
     allowStealing.value = DEFAULT_ALLOW_STEALING
+    activeQuestionKey.value = {
+      type: 'inWhichBook',
+      number: 1,
+    }
   }
 
   return {

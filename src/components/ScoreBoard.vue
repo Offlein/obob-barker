@@ -38,10 +38,12 @@ const subtotalContent = computed(() => {
       <table class="w-full">
         <thead>
         <tr>
+          <th class="col"></th>
           <th colspan="2" class="bg-team1-50 col">{{ store.team1.name }}</th>
           <th colspan="2" class="bg-team2-50 col">{{ store.team2.name }}</th>
         </tr>
         <tr class="text-sm">
+          <th class="col bg-gray-400"></th>
           <th class="col bg-gray-400 text-gray-50">Incorrect Response</th>
           <th class="col bg-gray-400 text-gray-50">Points</th>
           <th class="col bg-gray-400 text-gray-50">Points</th>
@@ -50,6 +52,7 @@ const subtotalContent = computed(() => {
         </thead>
         <tbody>
         <tr>
+          <th class="col text-center bg-gray-300 text-slate-600 py-1 text-md">#</th>
           <td colspan="4" class="col text-center bg-gray-300 text-slate-600 py-1 text-md">
             "In Which Book" Questions
           </td>
@@ -58,6 +61,10 @@ const subtotalContent = computed(() => {
           v-for="q of store.questionSet?.inWhichBook"
           :key="q.type + q.number"
         >
+          <td class="col">
+            <div>Q{{ q.number }}.</div>
+            <div v-if="q.type === 'backup'">(Backup)</div>
+          </td>
           <td class="col bg-team1-50  answer team1 ">
             <span
               v-if="q.score[1].points < 5 && q.score[1].wrongAnswer"
@@ -81,15 +88,14 @@ const subtotalContent = computed(() => {
           </td>
         </tr>
         <tr>
-          <td colspan="4" class="bg-gray-400 text-gray-50 col">"In Which Book" Subtotals</td>
-        </tr>
-        <tr>
-          <td class="bg-team1-100 text-team1-content col"></td>
+          <td class="col">Subtotal:</td>
+          <td class="bg-team1-50 text-team1-content col"></td>
           <td class="bg-team1-100 text-team1-content col">{{ subtotalContent.team1 }}</td>
           <td class="bg-team2-100 text-team2-content col">{{ subtotalContent.team2 }}</td>
-          <td class="bg-team2-100 text-team2-content col"></td>
+          <td class="bg-team2-50 text-team2-content col"></td>
         </tr>
         <tr>
+          <th class="col text-center bg-gray-300 text-slate-600 py-1 text-md">#</th>
           <td colspan="4" class="col text-center bg-gray-300 text-slate-600 py-1 text-md">
             "Content" Questions
           </td>
@@ -98,6 +104,10 @@ const subtotalContent = computed(() => {
           v-for="q of store.questionSet?.content"
           :key="q.type + q.number"
         >
+          <td class="col">
+            <div>Q{{ q.number }}.</div>
+            <div v-if="q.type === 'backup'">(Backup)</div>
+          </td>
           <td class="col bg-team1-50  answer team1 ">
             <span
               v-if="q.score[1].points < 5 && q.score[1].wrongAnswer"
@@ -121,19 +131,19 @@ const subtotalContent = computed(() => {
           </td>
         </tr>
         <tr>
-          <td colspan="4" class="bg-gray-400 text-gray-50 col">"Content" Subtotals</td>
-        </tr>
-        <tr>
-          <td class="bg-team1-100 text-team1-content col"></td>
+          <td class="col">Subtotal:</td>
+          <td class="bg-team1-50 text-team1-content col"></td>
           <td class="bg-team1-100 text-team1-content col">{{ subtotalContent.team1 }}</td>
           <td class="bg-team2-100 text-team2-content col">{{ subtotalContent.team2 }}</td>
-          <td class="bg-team2-100 text-team2-content col"></td>
+          <td class="bg-team2-50 text-team2-content col"></td>
         </tr>
         <tr>
+          <th class="col bg-gray-500"></th>
           <td colspan="4" class="bg-gray-500 text-gray-50 col uppercase">Final scores</td>
         </tr>
         <tr>
-          <td class="bg-team1-100 text-team1-content col"></td>
+          <td class="col">Final:</td>
+          <td class="bg-team1-50 text-team1-content col"></td>
           <td class="bg-team1-100 text-team1-content col">
             <span>{{ total.team1 }}</span>
             <span v-if="total.team1 > total.team2" class="ml-4 badge badge-primary">Winner!</span>
@@ -144,10 +154,17 @@ const subtotalContent = computed(() => {
             <span v-if="total.team2 > total.team1" class="ml-4 badge badge-primary">Winner!</span>
             <span v-if="total.team1 === total.team2" class="ml-4 badge badge-neutral">Tie</span>
           </td>
-          <td class="bg-team2-100 text-team2-content col"></td>
+          <td class="bg-team2-50 text-team2-content col"></td>
         </tr>
         </tbody>
       </table>
+      <div class="flex justify-center mt-2 gap-4">
+        <div
+          class="btn"
+          onmouseup="if (scoreboard.open) { scoreboard.close() }"
+        >Close</div>
+        <div class="btn btn-primary">Export</div>
+      </div>
     </div>
   </dialog>
 </template>

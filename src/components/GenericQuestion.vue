@@ -47,6 +47,8 @@ const store = useAppStore()
       :is-steal="true"
     />
   </div>
+
+  <div class="text-xs ">Need a backup question?</div>
 </template>
 
 <style scoped>

@@ -15,7 +15,6 @@ const updateFilename = (newFileName: string | undefined, isBackup?: boolean) => 
 }
 
 const updateQuestionSet = (newQuestionSet: QuestionSet | undefined, isBackup?: boolean) => {
-  console.log(newQuestionSet)
   if (isBackup) {
     store.backupQuestionSet = newQuestionSet
   } else {
