@@ -31,7 +31,7 @@ const handleRestartConfirmation = () => {
           </div>
           <div
             class="btn btn-neutral cursor-pointer"
-            onclick="scoreboard.showModal()"
+            onclick="scoreboard_modal.showModal()"
           >
             Show Scoreboard
           </div>

@@ -37,7 +37,7 @@ const subtotalContent = computed(() => {
 
 <template>
   <dialog
-    id="scoreboard"
+    id="scoreboard_modal"
     class="modal modal-middle"
   >
     <div class="modal-box w-[90%] max-w-[50rem] p-12 text-md">
@@ -200,7 +200,7 @@ const subtotalContent = computed(() => {
       <div class="flex justify-center mt-2 gap-4">
         <div
           class="btn"
-          onmouseup="if (scoreboard.open) { scoreboard.close() }"
+          onmouseup="if (scoreboard_modal.open) { scoreboard_modal.close() }"
         >
           Close
         </div>

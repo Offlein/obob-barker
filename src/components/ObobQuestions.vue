@@ -4,7 +4,6 @@ import { useAppStore } from '@/stores/AppStore.ts'
 import type { ContentQuestionType, InWhichBookQuestionType } from '@/types/ObobTypes.ts'
 import InWhichBookQuestion from '@/components/InWhichBookQuestion.vue'
 import ContentQuestion from '@/components/ContentQuestion.vue'
-import ScoreBoardModal from '@/components/ScoreBoardModal.vue'
 
 const store = useAppStore()
 
@@ -102,7 +101,7 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
         <button
           v-if="!canNext"
           class="btn btn-secondary"
-          onclick="scoreboard.showModal()"
+          onclick="scoreboard_modal.showModal()"
         >
           Show Scores
         </button>
@@ -140,8 +139,6 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
         </Transition>
       </template>
     </div>
-
-    <ScoreBoardModal />
   </div>
 </template>
 
