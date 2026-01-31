@@ -2,12 +2,15 @@
 import { computed, nextTick, ref, watch } from 'vue'
 import { useAppStore } from '@/stores/AppStore.ts'
 
-const props = withDefaults(defineProps<{
-  teamNumber: 1 | 2
-  isGameplay?: boolean
-}>(), {
-  isGameplay: true
-})
+const props = withDefaults(
+  defineProps<{
+    teamNumber: 1 | 2
+    isGameplay?: boolean
+  }>(),
+  {
+    isGameplay: true,
+  },
+)
 
 const store = useAppStore()
 
@@ -26,7 +29,6 @@ watch(isEditing, (newVal, oldVal) => {
     })
   }
 })
-
 </script>
 
 <template>
@@ -36,11 +38,11 @@ watch(isEditing, (newVal, oldVal) => {
   >
     <label
       v-if="!isGameplay || isEditing"
-      class="flex items-center gap-x-4"
+      class="flex items-center gap-x-4 text-black"
     >
       Team {{ thisTeam.number }} Name:
       <input
-        class="input flex-grow"
+        class="input flex-grow bg-white"
         v-model="thisTeam.name"
         :placeholder="thisTeam.number === 1 ? 'Read Against the Machine' : 'The Reading Crows'"
         @blur="isEditing = false"
@@ -53,9 +55,9 @@ watch(isEditing, (newVal, oldVal) => {
       class="p-2 transition-all bg-transparent border border-transparent hover:border-gray-500 hover:bg-white cursor-pointer"
       @click="isEditing = true"
     >
-     <div class="flex justify-between items-center">
-       <div class="text-gray-500 text-sm">Team {{ thisTeam.number }}:</div>
-     </div>
+      <div class="flex justify-between items-center">
+        <div class="text-gray-500 text-sm">Team {{ thisTeam.number }}:</div>
+      </div>
 
       <div class="text-lg">{{ thisTeam.name }}</div>
     </div>

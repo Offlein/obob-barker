@@ -16,8 +16,17 @@ const fileInput = ref<HTMLInputElement>()
 const questionSet = ref<QuestionSet>()
 const questionSetError = ref<string | undefined>()
 const isParsing = ref<boolean>(false)
+const identifiedQuestionSet = ref<number | undefined>()
 
 const { PDFParse } = await import('@/vendor/pdf-parse.es.min.js')
+
+const parseFilenameForQuestionSetNumber = (filename: string) => {
+  const matches = filename.match(/(?<!\d)\d{2}(?!\d)/g)
+  if (matches) {
+    return matches[matches.length - 1]
+  }
+  return undefined
+}
 
 const onLoadedData = async (e: Event) => {
   questionSetError.value = undefined
@@ -38,7 +47,11 @@ const onLoadedData = async (e: Event) => {
     const buffer = await file.arrayBuffer()
     const parser = new PDFParse({ data: buffer })
     const textObj = await parser.getText()
+    identifiedQuestionSet.value = parseFilenameForQuestionSetNumber(file.name)
     questionSet.value = parseQuestionSet(textObj.text)
+    if (questionSet.value) {
+      questionSet.value.number = identifiedQuestionSet.value
+    }
   } catch (e) {
     console.error(e)
     questionSetError.value = e instanceof Error ? e.message : String(e)
@@ -62,7 +75,6 @@ const clearFile = () => {
   emit('update:filename', undefined)
   emit('update:questions', undefined)
 }
-
 </script>
 
 <template>
@@ -74,10 +86,18 @@ const clearFile = () => {
         type="file"
         :class="{ 'file-input-primary': !questionSet, 'file-input-secondary': questionSet }"
         @change="onLoadedData"
-      >
+      />
     </div>
-    <div v-else class="flex input gap-x-4 items-center py-4 px-4 w-full">
-      <div class="btn btn-secondary btn-xs" @click="clearFile">Remove</div>
+    <div
+      v-else
+      class="flex input gap-x-4 items-center py-4 px-4 w-full"
+    >
+      <div
+        class="btn btn-secondary btn-xs"
+        @click="clearFile"
+      >
+        Remove
+      </div>
       <div class="overflow-hidden overflow-ellipsis">{{ filename }}</div>
     </div>
 
@@ -97,26 +117,43 @@ const clearFile = () => {
       <div v-if="questionSet">
         <div>Looks good! Found all 16 questions.</div>
       </div>
-      <div v-else-if="questionSetError" class="error">
-        Uh oh, {{ questionSetError}}
+      <div
+        v-else-if="questionSetError"
+        class="error"
+      >
+        Uh oh, {{ questionSetError }}
+      </div>
+      <div v-if="identifiedQuestionSet">
+        We've detected this question set is #{{ identifiedQuestionSet }}.
+      </div>
+      <div
+        v-else
+        class="error"
+      >
+        We could not parse the number of the question set. Please re-upload the file with a
+        two-digit number somewhere in the name, such as "obob-2027-04.pdf".
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes blink {
-  0%,100% {
-    opacity: 1
+  0%,
+  100% {
+    opacity: 1;
   }
   50% {
-    opacity: 0
+    opacity: 0;
   }
 }
 
@@ -133,7 +170,9 @@ const clearFile = () => {
 
 .blink {
   transition: opacity 0.5s ease;
-  animation: 1s forwards, blink 0.5s forwards 1s;
+  animation:
+    1s forwards,
+    blink 0.5s forwards 1s;
   animation-delay: 0.5s;
   animation-iteration-count: 2;
 }

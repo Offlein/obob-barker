@@ -3,6 +3,11 @@ export interface ObobScoreType {
   wrongAnswer?: string
 }
 
+export interface QuestionKey {
+  number: number
+  type: 'inWhichBook' | 'content'
+}
+
 export interface ObobQuestionType {
   type: 'inWhichBook' | 'content'
   questionSet: 'main' | 'backup'
@@ -11,8 +16,8 @@ export interface ObobQuestionType {
   pages: number[]
   teamNumber: 1 | 2
   score: {
-    1: ObobScoreType,
-    2: ObobScoreType,
+    1: ObobScoreType
+    2: ObobScoreType
   }
 }
 
@@ -33,6 +38,7 @@ export interface ContentQuestionType extends ObobQuestionType {
 }
 
 export type QuestionSet = {
+  number?: string
   inWhichBook: InWhichBookQuestionType[]
   content: ContentQuestionType[]
-};
+}

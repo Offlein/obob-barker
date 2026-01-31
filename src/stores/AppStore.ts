@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { Team } from '@/types/Team.ts'
-import type { ObobQuestionType, QuestionSet } from '@/types/ObobTypes.ts'
+import type { ObobQuestionType, QuestionKey, QuestionSet } from '@/types/ObobTypes.ts'
 import { StorageSerializers, useStorage } from '@vueuse/core'
 
 const DEFAULT_ALLOW_STEALING = true
@@ -9,7 +9,7 @@ const defaultTeam1: Team = {
   number: 1,
   name: '',
   color: 'team1',
-  responses: new Map<number, { points: number, wrongAnswer?: string }>(),
+  responses: new Map<number, { points: number; wrongAnswer?: string }>(),
   isConfigured: false,
 }
 
@@ -17,16 +17,37 @@ const defaultTeam2: Team = {
   number: 2,
   name: '',
   color: 'team2',
-  responses: new Map<number, { points: number, wrongAnswer?: string }>(),
+  responses: new Map<number, { points: number; wrongAnswer?: string }>(),
   isConfigured: false,
 }
 
-export const useAppStore = defineStore('app', () => {
-  const showConfig = useStorage('showConfig', true)
-  const configScreen = useStorage<'file' | 'teams'>('configScreen', 'file')
-  const allowStealing = useStorage<boolean>('allowStealing', DEFAULT_ALLOW_STEALING)
+export const calculateDefaultRoundTime = (): string => {
+  const now = new Date()
+  const minutes = now.getMinutes()
+  const roundedMinutes = minutes < 15 ? 0 : minutes < 45 ? 30 : 60
+  now.setMinutes(roundedMinutes)
+  now.setSeconds(0)
+  now.setMilliseconds(0)
 
-  const activeQuestionKey = useStorage<{ type: 'inWhichBook' | 'content', number: number }>('activeQuestionKey', {
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  const hours = String(now.getHours()).padStart(2, '0')
+  const mins = String(now.getMinutes()).padStart(2, '0')
+
+  return `${year}-${month}-${day}T${hours}:${mins}`
+}
+
+export const useAppStore = defineStore('app', () => {
+  const roundTime = useStorage<string>('roundTime', calculateDefaultRoundTime())
+  const moderatorName = useStorage<string>('moderatorName', '')
+
+  const showConfig = useStorage('showConfig', true)
+  const configScreen = useStorage<'intro' | 'file' | 'teams'>('configScreen', 'intro')
+  const allowStealing = useStorage<boolean>('allowStealing', DEFAULT_ALLOW_STEALING)
+  const backupQuestionsUsed = useStorage<Set<QuestionKey>>('backupQuestionsUsed', new Set())
+
+  const activeQuestionKey = useStorage<QuestionKey>('activeQuestionKey', {
     type: 'inWhichBook',
     number: 1,
   })
@@ -34,11 +55,25 @@ export const useAppStore = defineStore('app', () => {
   const team1 = useStorage<Team>('team1', defaultTeam1)
   const team2 = useStorage<Team>('team2', defaultTeam2)
 
-  const filename = useStorage<string | undefined>('questionSetFilename', null, undefined, { serializer: StorageSerializers.object })
-  const backupFilename = useStorage<string | undefined>('backupQuestionSetFilename', null, undefined, { serializer: StorageSerializers.object })
+  const filename = useStorage<string | undefined>('questionSetFilename', null, undefined, {
+    serializer: StorageSerializers.object,
+  })
+  const backupFilename = useStorage<string | undefined>(
+    'backupQuestionSetFilename',
+    null,
+    undefined,
+    { serializer: StorageSerializers.object },
+  )
 
-  const questionSet = useStorage<QuestionSet | undefined>('questionSet', null, undefined, { serializer: StorageSerializers.object })
-  const backupQuestionSet = useStorage<QuestionSet | undefined>('backupQuestionSet', null, undefined, { serializer: StorageSerializers.object })
+  const questionSet = useStorage<QuestionSet | undefined>('questionSet', null, undefined, {
+    serializer: StorageSerializers.object,
+  })
+  const backupQuestionSet = useStorage<QuestionSet | undefined>(
+    'backupQuestionSet',
+    null,
+    undefined,
+    { serializer: StorageSerializers.object },
+  )
 
   const teamScores = computed(() => {
     let score1 = 0
@@ -112,12 +147,34 @@ export const useAppStore = defineStore('app', () => {
     question.score[key] = { points: undefined, wrongAnswer: undefined }
   }
 
-  const setWrongAnswer = (question: ObobQuestionType,  wrongAnswer: string, isSteal: boolean) => {
+  const setWrongAnswer = (question: ObobQuestionType, wrongAnswer: string, isSteal: boolean) => {
     const activeTeamKey = question.teamNumber
     const stealTeamKey = question.teamNumber === 1 ? 2 : 1
     const key = isSteal ? stealTeamKey : activeTeamKey
     questionSet.value![question.type][question.number - 1]!.score[key]!.wrongAnswer = wrongAnswer
   }
+
+  const useBackupQuestion = () => {
+    console.log(backupQuestionsUsed.value)
+    backupQuestionsUsed.value.add({
+      type: activeQuestionKey.value.type,
+      number: activeQuestionKey.value.number,
+    })
+  }
+
+  const activeQuestionIsBackup = computed(() => {
+    console.log(backupQuestionsUsed.value)
+    console.log(
+      backupQuestionsUsed.value.has({
+        type: activeQuestionKey.value.type,
+        number: activeQuestionKey.value.number,
+      }),
+    )
+    return backupQuestionsUsed.value.has({
+      type: activeQuestionKey.value.type,
+      number: activeQuestionKey.value.number,
+    })
+  })
 
   const resetApp = () => {
     showConfig.value = true
@@ -133,9 +190,14 @@ export const useAppStore = defineStore('app', () => {
       type: 'inWhichBook',
       number: 1,
     }
+    backupQuestionsUsed.value.clear()
+    roundTime.value = calculateDefaultRoundTime()
+    moderatorName.value = ''
   }
 
   return {
+    roundTime,
+    moderatorName,
     showConfig,
     configScreen,
     allowStealing,
@@ -159,6 +221,9 @@ export const useAppStore = defineStore('app', () => {
     clearActiveTeamPoints,
     clearStealTeamPoints,
     setWrongAnswer,
-    resetApp
+    backupQuestionsUsed,
+    useBackupQuestion,
+    activeQuestionIsBackup,
+    resetApp,
   }
 })

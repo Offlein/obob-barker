@@ -1,18 +1,23 @@
 <script setup lang="ts" async>
 import { computed } from 'vue'
 import { useAppStore } from '@/stores/AppStore.ts'
-import type {
-  ContentQuestionType,
-  InWhichBookQuestionType,
-} from '@/types/ObobTypes.ts'
+import type { ContentQuestionType, InWhichBookQuestionType } from '@/types/ObobTypes.ts'
 import InWhichBookQuestion from '@/components/InWhichBookQuestion.vue'
 import ContentQuestion from '@/components/ContentQuestion.vue'
-import ScoreBoard from '@/components/ScoreBoard.vue'
+import ScoreBoardModal from '@/components/ScoreBoardModal.vue'
 
 const store = useAppStore()
 
 const activeQuestion = computed(() => {
-  return questionList.value.find((q) => q.number === store.activeQuestionKey.number && q.type === store.activeQuestionKey.type)
+  if (store.activeQuestionIsBackup) {
+    // The active question is from the backup set.
+    return store.backupQuestionSet![store.activeQuestionKey.type][
+      store.activeQuestionKey.number - 1
+    ]
+  }
+  return questionList.value.find(
+    (q) => q.number === store.activeQuestionKey.number && q.type === store.activeQuestionKey.type,
+  )
 })
 
 const canPrev = computed(() => {
@@ -20,7 +25,10 @@ const canPrev = computed(() => {
 })
 
 const canNext = computed(() => {
-  return !(store.activeQuestionKey.type === 'content' && store.activeQuestionKey.number >= store.questionSet!.content.length)
+  return !(
+    store.activeQuestionKey.type === 'content' &&
+    store.activeQuestionKey.number >= store.questionSet!.content.length
+  )
 })
 
 const goPrev = () => {
@@ -35,7 +43,10 @@ const goPrev = () => {
 }
 
 const goNext = () => {
-  if (store.activeQuestionKey.type === 'inWhichBook' && store.activeQuestionKey.number === store.questionSet!.inWhichBook.length) {
+  if (
+    store.activeQuestionKey.type === 'inWhichBook' &&
+    store.activeQuestionKey.number === store.questionSet!.inWhichBook.length
+  ) {
     store.activeQuestionKey = {
       type: 'content',
       number: 1,
@@ -49,20 +60,28 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
   if (!store.questionSet?.inWhichBook || !store.questionSet?.content) {
     return []
   }
-  return [
-    ...store.questionSet!.inWhichBook,
-    ...store.questionSet!.content,
-  ]
+  return [...store.questionSet!.inWhichBook, ...store.questionSet!.content]
 })
-
 </script>
 
 <template>
   <div class="flex flex-col">
     <div class="flex justify-between items-center gap-x-16">
       <div class="tabs tabs-box tabs-sm">
-        <div class="tab" :class="{ 'tab-active': store.activeQuestionKey.type === 'inWhichBook' }" @click="store.activeQuestionKey = { type: 'inWhichBook', number: 1 }">In Which Book</div>
-        <div class="tab" :class="{ 'tab-active': store.activeQuestionKey.type === 'content' }" @click="store.activeQuestionKey = { type: 'content', number: 1 }">Content</div>
+        <div
+          class="tab"
+          :class="{ 'tab-active': store.activeQuestionKey.type === 'inWhichBook' }"
+          @click="store.activeQuestionKey = { type: 'inWhichBook', number: 1 }"
+        >
+          In Which Book
+        </div>
+        <div
+          class="tab"
+          :class="{ 'tab-active': store.activeQuestionKey.type === 'content' }"
+          @click="store.activeQuestionKey = { type: 'content', number: 1 }"
+        >
+          Content
+        </div>
       </div>
 
       <div class="flex gap-x-4 justify-end questions-buttons">
@@ -70,17 +89,23 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
           class="btn btn-neutral"
           :disabled="!canPrev"
           @click="goPrev"
-        >Back</button>
+        >
+          Back
+        </button>
         <button
           v-if="canNext"
           class="btn btn-neutral"
           @click="goNext"
-        >Next</button>
+        >
+          Next
+        </button>
         <button
           v-if="!canNext"
           class="btn btn-secondary"
-          onclick="scoreboard.show()"
-        >Show Scores</button>
+          onclick="scoreboard.showModal()"
+        >
+          Show Scores
+        </button>
       </div>
     </div>
 
@@ -90,27 +115,33 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
         :key="question.type + question.number"
       >
         <Transition>
-            <div
-              v-if="store.activeQuestionKey.type === question.type && store.activeQuestionKey.number === question.number"
-              class="relative flex-grow p-8 mt-4 card shadow w-full"
-              :class="{ 'bg-team1-50': store.activeTeam.number === 1, 'bg-team2-50': store.activeTeam.number === 2 }"
-            >
-              <InWhichBookQuestion
-                v-if="activeQuestion!.type === 'inWhichBook'"
-                :question="activeQuestion as InWhichBookQuestionType"
-                :team="store.activeTeam"
-              />
-              <ContentQuestion
-                v-else
-                :question="activeQuestion as ContentQuestionType"
-                :team="store.activeTeam"
-              />
-            </div>
+          <div
+            v-if="
+              store.activeQuestionKey.type === question.type &&
+              store.activeQuestionKey.number === question.number
+            "
+            class="relative flex-grow p-8 mt-4 card shadow w-full"
+            :class="{
+              'bg-team1-50': store.activeTeam.number === 1,
+              'bg-team2-50': store.activeTeam.number === 2,
+            }"
+          >
+            <InWhichBookQuestion
+              v-if="activeQuestion!.type === 'inWhichBook'"
+              :question="activeQuestion as InWhichBookQuestionType"
+              :team="store.activeTeam"
+            />
+            <ContentQuestion
+              v-else
+              :question="activeQuestion as ContentQuestionType"
+              :team="store.activeTeam"
+            />
+          </div>
         </Transition>
       </template>
     </div>
 
-    <ScoreBoard />
+    <ScoreBoardModal />
   </div>
 </template>
 

@@ -50,24 +50,27 @@ const thisTeam = computed(() => {
     return store.activeTeam
   }
 })
-
 </script>
 
 <template>
   <div
     class="p-4 transition-colors duration-500 rounded-lg"
     :class="{
-          'bg-transparent': thisTeamScore?.points === undefined,
-          'bg-primary text-primary-content': thisTeamScore?.points === 5,
-          'bg-secondary text-secondary-content': thisTeamScore?.points === 3 || thisTeamScore?.points === 2,
-          'bg-error text-error-content': thisTeamScore?.points === 0,
-        }"
+      'bg-transparent': thisTeamScore?.points === undefined,
+      'bg-primary text-primary-content': thisTeamScore?.points === 5,
+      'bg-secondary text-secondary-content':
+        thisTeamScore?.points === 3 || thisTeamScore?.points === 2,
+      'bg-error text-error-content': thisTeamScore?.points === 0,
+    }"
   >
     <div
       v-if="thisTeamScore?.points === undefined"
       class="flex items-center justify-center gap-x-4"
     >
-      <div class="btn btn-error py-8 btn-lg gap-y-0 flex flex-col leading-none" @click="assignPoints(0)">
+      <div
+        class="btn btn-error py-8 btn-lg gap-y-0 flex flex-col leading-none"
+        @click="assignPoints(0)"
+      >
         <div class="mb-2">Incorrect</div>
         <div class="text-[0.85rem] text-error-content/50">No points</div>
       </div>
@@ -93,7 +96,7 @@ const thisTeam = computed(() => {
 
       <div
         v-if="!isSteal || (isSteal && otherTeamScore?.points === 0)"
-        class="btn btn-primary  py-8  btn-lg gap-y-0 flex flex-col leading-none"
+        class="btn btn-primary py-8 btn-lg gap-y-0 flex flex-col leading-none"
         @click="assignPoints(5)"
       >
         <div class="mb-2">Correct!</div>
@@ -113,18 +116,20 @@ const thisTeam = computed(() => {
           </div>
           <div>
             <span class="font-bold">{{ thisTeamScore?.points }} points</span>
-            <span v-if="isSteal"> stolen by</span> <span v-else> for</span> <span class="font-bold">{{ thisTeam.name }}</span>
+            <span v-if="isSteal"> stolen by</span> <span v-else> for</span>
+            <span class="font-bold">{{ thisTeam.name }}</span>
           </div>
         </div>
-        <button class="btn btn-sm" @click="clearPoints">undo?</button>
+        <button
+          class="btn btn-sm"
+          @click="clearPoints"
+        >
+          undo?
+        </button>
       </div>
 
-      <div
-        v-if="thisTeamScore && thisTeamScore.points < 5"
-      >
-        <div
-          class="flex text-sm mt-2 gap-x-2 items-center"
-        >
+      <div v-if="thisTeamScore && thisTeamScore.points < 5">
+        <div class="flex text-sm mt-2 gap-x-2 items-center">
           <div class="whitespace-nowrap">Answer given:</div>
           <input
             class="input input-sm text-black"
@@ -137,5 +142,4 @@ const thisTeam = computed(() => {
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

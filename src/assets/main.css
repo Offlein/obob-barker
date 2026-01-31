@@ -1,10 +1,12 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 @plugin "daisyui" {
   themes: emerald --default;
 }
 
 @layer base {
-  :root { scrollbar-gutter: auto; }
+  :root {
+    scrollbar-gutter: auto;
+  }
 }
 
 @theme {
@@ -14,7 +16,7 @@
   --color-team1-content-light: var(--color-indigo-800);
 
   --color-team2-50: #ffe7db;
-  --color-team2-100: #FFD3BA;
+  --color-team2-100: #ffd3ba;
   --color-team2-content: var(--color-orange-950);
   --color-team2-content-light: var(--color-amber-800);
 }

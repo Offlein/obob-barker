@@ -2,7 +2,9 @@
 import { useAppStore } from '@/stores/AppStore.ts'
 import ObobConfig from '@/views/ObobConfig.vue'
 import ObobGameplay from '@/views/ObobGameplay.vue'
-import WelcomeScript from '@/components/WelcomeScript.vue'
+import WelcomeScriptModal from '@/components/WelcomeScriptModal.vue'
+import ScoreBoardModal from '@/components/ScoreBoardModal.vue'
+import UseBackupModal from '@/components/UseBackupModal.vue'
 
 const store = useAppStore()
 </script>
@@ -14,23 +16,21 @@ const store = useAppStore()
   >
     <div class="root-background" />
     <Suspense>
-      <div
-        class="pt-24 overflow-hidden"
-      >
-        <div
-          class="bob-barker"
-        />
+      <div class="pt-24 overflow-hidden">
+        <div class="bob-barker" />
 
         <div
           class="z-[1] relative mx-auto max-w-[60rem] w-9/10"
-          onmouseup="if (welcome_modal.open) { welcome_modal.close() }"
+          onmouseup="if (welcome_script_modal.open) { welcome_script_modal.close() }"
         >
           <div class="">
             <ObobConfig v-if="store.showConfig" />
             <ObobGameplay v-else />
           </div>
 
-          <WelcomeScript />
+          <ScoreBoardModal />
+          <WelcomeScriptModal />
+          <UseBackupModal />
         </div>
       </div>
     </Suspense>
@@ -56,5 +56,4 @@ const store = useAppStore()
 .bob-barker {
   @apply z-[0] w-1/2 h-full fixed left-0 bottom-0 bg-contain bg-bottom-left bg-no-repeat bg-[url(/bob-barker-white.svg)];
 }
-
 </style>

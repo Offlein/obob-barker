@@ -7,11 +7,13 @@ defineProps<{
   question: InWhichBookQuestionType
   team: Team
 }>()
-
 </script>
 
 <template>
-  <GenericQuestion :question="question" :team="team">
+  <GenericQuestion
+    :question="question"
+    :team="team"
+  >
     <template #question>
       <div class="text-[1.5rem] mt-2 mb-4">
         {{ question.question }}
@@ -31,6 +33,4 @@ defineProps<{
   </GenericQuestion>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

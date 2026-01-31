@@ -15,11 +15,8 @@ const start = async () => {
 
   const pdfs = fs
     .readdirSync(questionsDir, { withFileTypes: true })
-    .filter(entry =>
-      entry.isFile() &&
-      entry.name.toLowerCase().endsWith('.pdf')
-    )
-    .map(entry => path.join(questionsDir, entry.name))
+    .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith('.pdf'))
+    .map((entry) => path.join(questionsDir, entry.name))
 
   console.log(`Found ${pdfs.length} PDFs.`)
 
@@ -61,9 +58,11 @@ const checkPageValidity = (textObj: TextResult, pdf: string) => {
 const checkQuestionCountValidity = (parsed: QuestionSet, pdf: string) => {
   const countInWhichBook = parsed.inWhichBook.length
   const countContent = parsed.content.length
-  console.log(` | Found ${countInWhichBook} "In Which Book" Questions and ${countContent} "Content" questions.`)
+  console.log(
+    ` | Found ${countInWhichBook} "In Which Book" Questions and ${countContent} "Content" questions.`,
+  )
   if (countInWhichBook !== 8 || countContent !== 8) {
-    console.error(` * PDF ${ pdf } does not contain exactly 16 questions. Something is wrong!`)
+    console.error(` * PDF ${pdf} does not contain exactly 16 questions. Something is wrong!`)
     issuesSet.add(pdf)
   }
 }
@@ -75,8 +74,12 @@ const checkQuestionDataValidity = (parsed: QuestionSet, pdf: string) => {
 
 // Ensure no missing data in "In Which Book" questions.
 const checkInWhichBookQuestionDataValidity = (parsed: QuestionSet, pdf: string) => {
-  for (const [,question] of parsed.inWhichBook.entries()) {
-    if (question.question.length < 3 || question.answerTitle.length < 3 || question.answerAuthor.length < 2) {
+  for (const [, question] of parsed.inWhichBook.entries()) {
+    if (
+      question.question.length < 3 ||
+      question.answerTitle.length < 3 ||
+      question.answerAuthor.length < 2
+    ) {
       console.error(` * Some data was parsed incorrectly in this question!`)
       issuesSet.add(pdf)
     }
@@ -85,7 +88,7 @@ const checkInWhichBookQuestionDataValidity = (parsed: QuestionSet, pdf: string) 
 
 // Ensure no missing data in "Content" questions.
 const checkContentQuestionDataValidity = (parsed: QuestionSet, pdf: string) => {
-  for (const [,question] of parsed.content.entries()) {
+  for (const [, question] of parsed.content.entries()) {
     if (question.question.length < 3 || question.title.length < 3 || question.answer.length < 1) {
       console.error(` * Some data was parsed incorrectly in this question!`)
       issuesSet.add(pdf)
