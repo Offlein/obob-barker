@@ -79,7 +79,7 @@ const clearFile = () => {
 </script>
 
 <template>
-  <div class="w-1/2 max-w-[28rem] mb-6 mx-auto relative">
+  <div class="w-1/2 max-w-[28rem] mb-10 mx-auto relative">
     <div v-if="!filename">
       <input
         ref="fileInput"
@@ -124,7 +124,7 @@ const clearFile = () => {
       >
         Uh oh, {{ questionSetError }}
       </div>
-      <div v-if="identifiedQuestionSet">
+      <div v-if="identifiedQuestionSet" class="pb-8">
         We've detected this question set is #{{ identifiedQuestionSet }}.
       </div>
       <div

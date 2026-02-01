@@ -1,4 +1,4 @@
-import { computed } from 'vue'
+import { computed, reactive } from 'vue'
 import { defineStore } from 'pinia'
 import type { Team } from '@/types/Team.ts'
 import type {
@@ -9,7 +9,7 @@ import type {
 } from '@/types/ObobTypes.ts'
 import { StorageSerializers, useStorage } from '@vueuse/core'
 
-const DEFAULT_ALLOW_STEALING = true
+const DEFAULT_ALLOW_STEALING = false
 const defaultTeam1: Team = {
   number: 1,
   name: '',
@@ -47,6 +47,10 @@ export const useAppStore = defineStore('app', () => {
   const roundTime = useStorage<string>('roundTime', calculateDefaultRoundTime())
   const moderatorName = useStorage<string>('moderatorName', '')
 
+  const signoff = useStorage<{ team1: boolean, team2: boolean }>('signoff', {
+    team1: false,
+    team2: false,
+  })
   const showConfig = useStorage('showConfig', true)
   const configScreen = useStorage<'intro' | 'file' | 'teams'>('configScreen', 'intro')
   const allowStealing = useStorage<boolean>('allowStealing', DEFAULT_ALLOW_STEALING)
@@ -187,7 +191,7 @@ export const useAppStore = defineStore('app', () => {
 
   const resetApp = () => {
     showConfig.value = true
-    configScreen.value = 'file'
+    configScreen.value = 'intro'
     team1.value = defaultTeam1
     team2.value = defaultTeam2
     filename.value = undefined
@@ -199,6 +203,7 @@ export const useAppStore = defineStore('app', () => {
       type: 'inWhichBook',
       number: 1,
     }
+    signoff.value = { team1: false, team2: false }
     backupQuestionsUsedInWhichBook.value = []
     backupQuestionsUsedContent.value = []
     roundTime.value = calculateDefaultRoundTime()
@@ -213,6 +218,7 @@ export const useAppStore = defineStore('app', () => {
     allowStealing,
     team1,
     team2,
+    signoff,
     teamScores,
     filename,
     backupFilename,

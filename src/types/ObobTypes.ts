@@ -1,7 +1,7 @@
 export type QuestionTypes = 'inWhichBook' | 'content'
 
 export interface ObobScoreType {
-  points?: number
+  points: number
   wrongAnswer?: string
 }
 

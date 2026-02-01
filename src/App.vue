@@ -3,7 +3,7 @@ import { useAppStore } from '@/stores/AppStore.ts'
 import ObobConfig from '@/views/ObobConfig.vue'
 import ObobGameplay from '@/views/ObobGameplay.vue'
 import WelcomeScriptModal from '@/components/WelcomeScriptModal.vue'
-import ScoreBoardModal from '@/components/ScoreBoardModal.vue'
+import ScoreSheetModal from '@/components/ScoreSheetModal.vue'
 import UseBackupModal from '@/components/UseBackupModal.vue'
 
 const store = useAppStore()
@@ -28,7 +28,7 @@ const store = useAppStore()
             <ObobGameplay v-else />
           </div>
 
-          <ScoreBoardModal />
+          <ScoreSheetModal />
           <WelcomeScriptModal />
           <UseBackupModal />
         </div>

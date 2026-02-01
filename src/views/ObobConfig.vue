@@ -93,6 +93,16 @@ const handleTimeBlur = () => {
               v-model="store.moderatorName"
             />
           </label>
+          <label class="flex items-center text-black">
+            <div class="w-[10rem]">Stealing points</div>
+            <select
+              class="input w-[12rem] flex-grow"
+              v-model="store.allowStealing"
+            >
+              <option :value="true">Stealing Allowed</option>
+              <option :value="false">No Stealing</option>
+            </select>
+          </label>
         </div>
         <Transition>
           <div

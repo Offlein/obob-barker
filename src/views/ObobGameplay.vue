@@ -31,9 +31,9 @@ const handleRestartConfirmation = () => {
           </div>
           <div
             class="btn btn-neutral cursor-pointer"
-            onclick="scoreboard_modal.showModal()"
+            onclick="scoresheet_modal.showModal()"
           >
-            Show Scoreboard
+            Score Sheet
           </div>
         </div>
 
@@ -45,11 +45,7 @@ const handleRestartConfirmation = () => {
             <IconClearOctagon class="text-[1rem]" />
             Reset / Start Over
           </div>
-          <div
-            class="transition-opacity duration-500 delay-250 opacity-0 group-hover:opacity-100 text-center"
-          >
-            Confirmation will be required.
-          </div>
+          <div class="transition-opacity duration-500 delay-250 opacity-0 group-hover:opacity-100 text-center">Confirmation will be required.</div>
         </div>
       </div>
     </div>
@@ -65,9 +61,7 @@ const handleRestartConfirmation = () => {
         <form method="dialog">
           <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">✕</button>
         </form>
-        <h3 class="text-lg font-bold text-error">
-          Are you sure you want to <strong>start over</strong>?
-        </h3>
+        <h3 class="text-lg font-bold text-error">Are you sure you want to <strong>start over</strong>?</h3>
         <p class="py-4">Any progress in this round will be lost.</p>
 
         <div class="flex gap-x-8 justify-center items-center">

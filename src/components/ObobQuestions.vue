@@ -8,9 +8,7 @@ import ContentQuestion from '@/components/ContentQuestion.vue'
 const store = useAppStore()
 
 const activeQuestion = computed(() => {
-  return questionList.value.find(
-    (q) => q.number === store.activeQuestionKey.number && q.type === store.activeQuestionKey.type,
-  )
+  return questionList.value.find((q) => q.number === store.activeQuestionKey.number && q.type === store.activeQuestionKey.type)
 })
 
 const canPrev = computed(() => {
@@ -18,10 +16,7 @@ const canPrev = computed(() => {
 })
 
 const canNext = computed(() => {
-  return !(
-    store.activeQuestionKey.type === 'content' &&
-    store.activeQuestionKey.number >= store.questionSet!.content.length
-  )
+  return !(store.activeQuestionKey.type === 'content' && store.activeQuestionKey.number >= store.questionSet!.content.length)
 })
 
 const goPrev = () => {
@@ -36,10 +31,7 @@ const goPrev = () => {
 }
 
 const goNext = () => {
-  if (
-    store.activeQuestionKey.type === 'inWhichBook' &&
-    store.activeQuestionKey.number === store.questionSet!.inWhichBook.length
-  ) {
+  if (store.activeQuestionKey.type === 'inWhichBook' && store.activeQuestionKey.number === store.questionSet!.inWhichBook.length) {
     store.activeQuestionKey = {
       type: 'content',
       number: 1,
@@ -95,7 +87,7 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
         <button
           v-if="!canNext"
           class="btn btn-secondary"
-          onclick="scoreboard_modal.showModal()"
+          onclick="scoresheet_modal.showModal()"
         >
           Show Scores
         </button>
@@ -109,11 +101,8 @@ const questionList = computed((): (InWhichBookQuestionType | ContentQuestionType
       >
         <Transition>
           <div
-            v-if="
-              store.activeQuestionKey.type === question.type &&
-              store.activeQuestionKey.number === question.number
-            "
-            class="relative flex-grow p-8 mt-4 card shadow w-full"
+            v-if="store.activeQuestionKey.type === question.type && store.activeQuestionKey.number === question.number"
+            class="relative flex-grow p-8 mt-4 card shadow"
             :class="{
               'bg-team1-50': store.activeTeam.number === 1,
               'bg-team2-50': store.activeTeam.number === 2,
