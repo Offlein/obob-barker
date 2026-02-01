@@ -8,12 +8,6 @@ import ContentQuestion from '@/components/ContentQuestion.vue'
 const store = useAppStore()
 
 const activeQuestion = computed(() => {
-  if (store.activeQuestionIsBackup) {
-    // The active question is from the backup set.
-    return store.backupQuestionSet![store.activeQuestionKey.type][
-      store.activeQuestionKey.number - 1
-    ]
-  }
   return questionList.value.find(
     (q) => q.number === store.activeQuestionKey.number && q.type === store.activeQuestionKey.type,
   )

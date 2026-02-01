@@ -1,3 +1,5 @@
+export type QuestionTypes = 'inWhichBook' | 'content'
+
 export interface ObobScoreType {
   points?: number
   wrongAnswer?: string
@@ -5,11 +7,11 @@ export interface ObobScoreType {
 
 export interface QuestionKey {
   number: number
-  type: 'inWhichBook' | 'content'
+  type: QuestionTypes
 }
 
 export interface ObobQuestionType {
-  type: 'inWhichBook' | 'content'
+  type: QuestionTypes
   questionSet: 'main' | 'backup'
   number: number
   question: string
@@ -19,6 +21,7 @@ export interface ObobQuestionType {
     1: ObobScoreType
     2: ObobScoreType
   }
+  backupReplacement?: Exclude<ObobQuestionType, 'backupReplacement'>
 }
 
 export interface InWhichBookQuestionType extends ObobQuestionType {

@@ -3,8 +3,9 @@ import { parseQuestionSet } from '@/lib/ObobParser.ts'
 import type { QuestionSet } from '@/types/ObobTypes.ts'
 import { ref } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   filename?: string
+  isBackup: boolean
 }>()
 
 const emit = defineEmits<{
@@ -16,7 +17,7 @@ const fileInput = ref<HTMLInputElement>()
 const questionSet = ref<QuestionSet>()
 const questionSetError = ref<string | undefined>()
 const isParsing = ref<boolean>(false)
-const identifiedQuestionSet = ref<number | undefined>()
+const identifiedQuestionSet = ref<string | undefined>()
 
 const { PDFParse } = await import('@/vendor/pdf-parse.es.min.js')
 
@@ -48,7 +49,7 @@ const onLoadedData = async (e: Event) => {
     const parser = new PDFParse({ data: buffer })
     const textObj = await parser.getText()
     identifiedQuestionSet.value = parseFilenameForQuestionSetNumber(file.name)
-    questionSet.value = parseQuestionSet(textObj.text)
+    questionSet.value = parseQuestionSet(textObj.text, props.isBackup)
     if (questionSet.value) {
       questionSet.value.number = identifiedQuestionSet.value
     }

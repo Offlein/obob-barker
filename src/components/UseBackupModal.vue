@@ -7,7 +7,6 @@ const store = useAppStore()
 
 const useBackupQuestion = () => {
   store.useBackupQuestion()
-  //modal.value?.removeAttribute('open')
 }
 </script>
 

@@ -1,7 +1,12 @@
 import { computed } from 'vue'
 import { defineStore } from 'pinia'
 import type { Team } from '@/types/Team.ts'
-import type { ObobQuestionType, QuestionKey, QuestionSet } from '@/types/ObobTypes.ts'
+import type {
+  ObobQuestionType,
+  QuestionKey,
+  QuestionSet,
+  QuestionTypes,
+} from '@/types/ObobTypes.ts'
 import { StorageSerializers, useStorage } from '@vueuse/core'
 
 const DEFAULT_ALLOW_STEALING = true
@@ -45,7 +50,11 @@ export const useAppStore = defineStore('app', () => {
   const showConfig = useStorage('showConfig', true)
   const configScreen = useStorage<'intro' | 'file' | 'teams'>('configScreen', 'intro')
   const allowStealing = useStorage<boolean>('allowStealing', DEFAULT_ALLOW_STEALING)
-  const backupQuestionsUsed = useStorage<Set<QuestionKey>>('backupQuestionsUsed', new Set())
+  const backupQuestionsUsedContent = useStorage<number[]>('backupQuestionsUsedContent', [])
+  const backupQuestionsUsedInWhichBook = useStorage<number[]>(
+    'backupQuestionsUsedInWhichBook',
+    [],
+  )
 
   const activeQuestionKey = useStorage<QuestionKey>('activeQuestionKey', {
     type: 'inWhichBook',
@@ -154,26 +163,26 @@ export const useAppStore = defineStore('app', () => {
     questionSet.value![question.type][question.number - 1]!.score[key]!.wrongAnswer = wrongAnswer
   }
 
-  const useBackupQuestion = () => {
-    console.log(backupQuestionsUsed.value)
-    backupQuestionsUsed.value.add({
-      type: activeQuestionKey.value.type,
-      number: activeQuestionKey.value.number,
-    })
+  const getRelevantBackupQuestionArray = (questionType: QuestionTypes) => {
+    return questionType === 'content' ? backupQuestionsUsedContent : backupQuestionsUsedInWhichBook
   }
 
-  const activeQuestionIsBackup = computed(() => {
-    console.log(backupQuestionsUsed.value)
-    console.log(
-      backupQuestionsUsed.value.has({
-        type: activeQuestionKey.value.type,
-        number: activeQuestionKey.value.number,
-      }),
-    )
-    return backupQuestionsUsed.value.has({
-      type: activeQuestionKey.value.type,
-      number: activeQuestionKey.value.number,
-    })
+  const useBackupQuestion = () => {
+    const relevantArray = getRelevantBackupQuestionArray(activeQuestionKey.value.type)
+    relevantArray.value.push(activeQuestionKey.value.number)
+    activeQuestion.value!.backupReplacement = backupQuestionSet.value![activeQuestionKey.value.type][relevantArray.value.length - 1]
+  }
+
+  const backupQuestionNumberForActiveQuestion = computed((): number | undefined => {
+    const relevantArray = getRelevantBackupQuestionArray(activeQuestionKey.value.type)
+    for (let i = 0; i < relevantArray.value.length; i++) {
+      const originalQuestionNumber = relevantArray.value[i]
+      if (activeQuestionKey.value.number === originalQuestionNumber) {
+        // The original question number was at index `i` in tne array. So the backup question number is `i + 1`.
+        return i + 1
+      }
+    }
+    return undefined
   })
 
   const resetApp = () => {
@@ -190,7 +199,8 @@ export const useAppStore = defineStore('app', () => {
       type: 'inWhichBook',
       number: 1,
     }
-    backupQuestionsUsed.value.clear()
+    backupQuestionsUsedInWhichBook.value = []
+    backupQuestionsUsedContent.value = []
     roundTime.value = calculateDefaultRoundTime()
     moderatorName.value = ''
   }
@@ -221,9 +231,8 @@ export const useAppStore = defineStore('app', () => {
     clearActiveTeamPoints,
     clearStealTeamPoints,
     setWrongAnswer,
-    backupQuestionsUsed,
     useBackupQuestion,
-    activeQuestionIsBackup,
+    backupQuestionNumberForActiveQuestion,
     resetApp,
   }
 })

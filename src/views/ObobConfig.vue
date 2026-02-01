@@ -119,6 +119,7 @@ const handleTimeBlur = () => {
           <p>Please select your <strong>question set</strong> to begin.</p>
           <PdfLoader
             :filename="store.filename"
+            :is-backup="false"
             @update:filename="updateFilename($event, false)"
             @update:questions="updateQuestionSet($event, false)"
           />
@@ -133,6 +134,7 @@ const handleTimeBlur = () => {
             <PdfLoader
               class="my-1"
               :filename="store.backupFilename"
+              :is-backup="true"
               @update:filename="updateFilename($event, true)"
               @update:questions="updateQuestionSet($event, true)"
             />

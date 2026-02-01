@@ -15,7 +15,12 @@ const store = useAppStore()
 <template>
   <div class="relative pb-2">
     <div class="flex justify-between">
-      <div>Question #{{ question.number }}</div>
+      <div>
+        Question #{{ question.number }}
+        <span v-if="question.backupReplacement" class="text-error">
+          [BACKUP #{{ question.backupReplacement?.number }}]
+        </span>
+      </div>
       <div>Team: {{ team.name }}</div>
     </div>
 
@@ -37,7 +42,7 @@ const store = useAppStore()
     />
 
     <div
-      v-if="store.allowStealing && store.activeTeamScore && store.activeTeamScore.points < 5"
+      v-if="store.allowStealing && store.activeTeamScore && store.activeTeamScore.points! < 5"
       class="mt-4"
     >
       <div class="text-center mt-2">
@@ -51,7 +56,7 @@ const store = useAppStore()
     </div>
 
     <div
-      v-if="!store.activeQuestionIsBackup"
+      v-if="!question.backupReplacement"
       class="text-xs absolute right-4 -bottom-4 cursor-pointer hover:underline"
       onclick="use_backup_modal.showModal()"
     >

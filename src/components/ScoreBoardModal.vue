@@ -82,7 +82,7 @@ const subtotalContent = computed(() => {
           >
             <td class="col">
               <div>Q{{ q.number }}.</div>
-              <div v-if="q.type === 'backup'">(Backup)</div>
+              <div class="text-xs text-error" v-if="q.backupReplacement">(Backup #{{ q.backupReplacement.number }})</div>
             </td>
             <td class="col bg-team1-50 answer team1">
               <span
@@ -126,7 +126,7 @@ const subtotalContent = computed(() => {
           >
             <td class="col">
               <div>Q{{ q.number }}.</div>
-              <div v-if="q.type === 'backup'">(Backup)</div>
+              <div class="text-xs text-error" v-if="q.backupReplacement">(Backup #{{ q.backupReplacement.number }})</div>
             </td>
             <td class="col bg-team1-50 answer team1">
               <span
