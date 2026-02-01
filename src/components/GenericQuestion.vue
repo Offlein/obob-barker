@@ -64,9 +64,9 @@ const store = useAppStore()
     </div>
     <div
       v-else
-      class="backup-warning"
+      class="backup-warning text-sm py-1"
     >
-      THIS IS BACKUP QUESTION #{{ store.activeQuestionKey.number }}
+      THIS IS A BACKUP QUESTION
     </div>
   </div>
 </template>

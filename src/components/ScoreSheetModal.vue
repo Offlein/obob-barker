@@ -35,9 +35,10 @@ const subtotalInWhichBook = computed(() => {
   let team1 = 0
   let team2 = 0
   if (store.questionSet) {
-    for (const q of store.questionSet!.inWhichBook!) {
-      team1 += q.score[1]?.points ?? 0
-      team2 += q.score[2]?.points ?? 0
+    for (const q of store.questionSet.inWhichBook!) {
+      console.log(q.score)
+      team1 += q.score['1']?.points ?? 0
+      team2 += q.score['2']?.points ?? 0
     }
   }
   return { team1, team2 }
@@ -48,8 +49,8 @@ const subtotalContent = computed(() => {
   let team2 = 0
   if (store.questionSet) {
     for (const q of store.questionSet.content!) {
-      team1 += q.score[1]?.points ?? 0
-      team2 += q.score[2]?.points ?? 0
+      team1 += q.score['1']?.points ?? 0
+      team2 += q.score['2']?.points ?? 0
     }
   }
   return { team1, team2 }
@@ -143,10 +144,10 @@ const subtotalContent = computed(() => {
                 </span>
               </td>
               <td class="col points team1 bg-team1-100">
-                {{ q.score[1].points > 0 ? q.score[1].points : '' }}
+                {{ q.score[1].points > 0 ? q.score[1].points : '-' }}
               </td>
               <td class="col points team2 bg-team2-100">
-                {{ q.score[2].points > 0 ? q.score[2].points : '' }}
+                {{ q.score[2].points > 0 ? q.score[2].points : '-' }}
               </td>
               <td class="col answer team2 bg-team2-50">
                 <div v-if="q.score[2].points < 5 && q.score[2].wrongAnswer">
@@ -157,8 +158,8 @@ const subtotalContent = computed(() => {
             <tr>
               <td class="col">Subtotal:</td>
               <td class="bg-team1-50 text-team1-content col"></td>
-              <td class="bg-team1-100 text-team1-content col">{{ subtotalContent.team1 }}</td>
-              <td class="bg-team2-100 text-team2-content col">{{ subtotalContent.team2 }}</td>
+              <td class="bg-team1-100 text-team1-content col">{{ subtotalInWhichBook.team1 }}</td>
+              <td class="bg-team2-100 text-team2-content col">{{ subtotalInWhichBook.team2 }}</td>
               <td class="bg-team2-50 text-team2-content col"></td>
             </tr>
             <tr>
